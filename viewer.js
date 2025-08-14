@@ -173,7 +173,7 @@
 
   async function load() {
     // Prefer boardgames.json, fall back to first_page_detailed.json
-    const candidates = ['first_page_detailed.json', 'boardgames.json'];
+    const candidates = ['boardgames.json'];
     let data = null;
     let lastErr = null;
     for (const url of candidates) {
