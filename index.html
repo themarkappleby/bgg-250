@@ -27,6 +27,60 @@
             </select>
             <input id="weight-value" type="number" min="0" max="5" step="0.1" placeholder="2.5" />
           </label>
+          <label class="control">
+            <small>Min P</small>
+            <select id="min-players-op">
+              <option value="all">All</option>
+              <option value="lte">≤</option>
+              <option value="gte">≥</option>
+            </select>
+            <input id="min-players-value" type="number" min="1" step="1" placeholder="2" />
+          </label>
+          <label class="control">
+            <small>Max P</small>
+            <select id="max-players-op">
+              <option value="all">All</option>
+              <option value="lte">≤</option>
+              <option value="gte">≥</option>
+            </select>
+            <input id="max-players-value" type="number" min="1" step="1" placeholder="4" />
+          </label>
+          <label class="control">
+            <small>Best Min</small>
+            <select id="min-best-players-op">
+              <option value="all">All</option>
+              <option value="lte">≤</option>
+              <option value="gte">≥</option>
+            </select>
+            <input id="min-best-players-value" type="number" min="1" step="1" placeholder="2" />
+          </label>
+          <label class="control">
+            <small>Best Max</small>
+            <select id="max-best-players-op">
+              <option value="all">All</option>
+              <option value="lte">≤</option>
+              <option value="gte">≥</option>
+            </select>
+            <input id="max-best-players-value" type="number" min="1" step="1" placeholder="4" />
+          </label>
+          <label class="control">
+            <small>Min Time</small>
+            <select id="min-time-op">
+              <option value="all">All</option>
+              <option value="lte">≤</option>
+              <option value="gte">≥</option>
+            </select>
+            <input id="min-time-value" type="number" min="0" step="5" placeholder="30" />
+          </label>
+          <label class="control">
+            <small>Max Time</small>
+            <select id="max-time-op">
+              <option value="all">All</option>
+              <option value="lte">≤</option>
+              <option value="gte">≥</option>
+            </select>
+            <input id="max-time-value" type="number" min="0" step="5" placeholder="90" />
+          </label>
           <span id="summary" class="summary"></span>
         </div>
       </div>

@@ -7,7 +7,19 @@
     sortDir: 'asc', // 'asc' | 'desc'
     query: '',
     weightOp: 'all', // 'all' | 'lte' | 'gte'
-    weightValue: ''
+    weightValue: '',
+    minPlayersOp: 'all',
+    minPlayersValue: '',
+    maxPlayersOp: 'all',
+    maxPlayersValue: '',
+    minBestPlayersOp: 'all',
+    minBestPlayersValue: '',
+    maxBestPlayersOp: 'all',
+    maxBestPlayersValue: '',
+    minTimeOp: 'all',
+    minTimeValue: '',
+    maxTimeOp: 'all',
+    maxTimeValue: ''
   };
 
   const numberKeys = new Set([
@@ -51,6 +63,66 @@
         if (op === 'gte') rows = rows.filter(g => { const gw = Number(g.weight); return !Number.isNaN(gw) && gw >= threshold; });
       }
     }
+
+    // Min players
+    if (state.minPlayersValue !== '') {
+      const t = Number(state.minPlayersValue);
+      if (!Number.isNaN(t)) {
+        const op = state.minPlayersOp === 'all' ? 'gte' : state.minPlayersOp;
+        if (op === 'lte') rows = rows.filter(g => { const v = Number(g.min_players); return !Number.isNaN(v) && v <= t; });
+        if (op === 'gte') rows = rows.filter(g => { const v = Number(g.min_players); return !Number.isNaN(v) && v >= t; });
+      }
+    }
+
+    // Max players
+    if (state.maxPlayersValue !== '') {
+      const t = Number(state.maxPlayersValue);
+      if (!Number.isNaN(t)) {
+        const op = state.maxPlayersOp === 'all' ? 'gte' : state.maxPlayersOp;
+        if (op === 'lte') rows = rows.filter(g => { const v = Number(g.max_players); return !Number.isNaN(v) && v <= t; });
+        if (op === 'gte') rows = rows.filter(g => { const v = Number(g.max_players); return !Number.isNaN(v) && v >= t; });
+      }
+    }
+
+    // Best min players
+    if (state.minBestPlayersValue !== '') {
+      const t = Number(state.minBestPlayersValue);
+      if (!Number.isNaN(t)) {
+        const op = state.minBestPlayersOp === 'all' ? 'gte' : state.minBestPlayersOp;
+        if (op === 'lte') rows = rows.filter(g => { const v = Number(g.min_best_players); return !Number.isNaN(v) && v <= t; });
+        if (op === 'gte') rows = rows.filter(g => { const v = Number(g.min_best_players); return !Number.isNaN(v) && v >= t; });
+      }
+    }
+
+    // Best max players
+    if (state.maxBestPlayersValue !== '') {
+      const t = Number(state.maxBestPlayersValue);
+      if (!Number.isNaN(t)) {
+        const op = state.maxBestPlayersOp === 'all' ? 'gte' : state.maxBestPlayersOp;
+        if (op === 'lte') rows = rows.filter(g => { const v = Number(g.max_best_players); return !Number.isNaN(v) && v <= t; });
+        if (op === 'gte') rows = rows.filter(g => { const v = Number(g.max_best_players); return !Number.isNaN(v) && v >= t; });
+      }
+    }
+
+    // Min time
+    if (state.minTimeValue !== '') {
+      const t = Number(state.minTimeValue);
+      if (!Number.isNaN(t)) {
+        const op = state.minTimeOp === 'all' ? 'gte' : state.minTimeOp;
+        if (op === 'lte') rows = rows.filter(g => { const v = Number(g.min_playing_time); return !Number.isNaN(v) && v <= t; });
+        if (op === 'gte') rows = rows.filter(g => { const v = Number(g.min_playing_time); return !Number.isNaN(v) && v >= t; });
+      }
+    }
+
+    // Max time
+    if (state.maxTimeValue !== '') {
+      const t = Number(state.maxTimeValue);
+      if (!Number.isNaN(t)) {
+        const op = state.maxTimeOp === 'all' ? 'gte' : state.maxTimeOp;
+        if (op === 'lte') rows = rows.filter(g => { const v = Number(g.max_playing_time); return !Number.isNaN(v) && v <= t; });
+        if (op === 'gte') rows = rows.filter(g => { const v = Number(g.max_playing_time); return !Number.isNaN(v) && v >= t; });
+      }
+    }
     rows.sort((a, b) => compare(a, b, state.sortKey, state.sortDir));
     state.filtered = rows;
     renderTableBody(rows);
@@ -61,11 +133,15 @@
   function renderSummary() {
     const el = document.getElementById('summary');
     if (!el) return;
-    let extra = '';
-    if (state.weightValue !== '') {
-      const opLabel = state.weightOp === 'lte' ? '≤' : '≥';
-      extra = ` • Weight ${opLabel} ${String(state.weightValue).replace(',', '.')}`;
-    }
+    const parts = [];
+    if (state.weightValue !== '') parts.push(`Weight ${(state.weightOp === 'lte') ? '≤' : '≥'} ${String(state.weightValue).replace(',', '.')}`);
+    if (state.minPlayersValue !== '') parts.push(`Min P ${(state.minPlayersOp === 'lte') ? '≤' : '≥'} ${state.minPlayersValue}`);
+    if (state.maxPlayersValue !== '') parts.push(`Max P ${(state.maxPlayersOp === 'lte') ? '≤' : '≥'} ${state.maxPlayersValue}`);
+    if (state.minBestPlayersValue !== '') parts.push(`Best Min ${(state.minBestPlayersOp === 'lte') ? '≤' : '≥'} ${state.minBestPlayersValue}`);
+    if (state.maxBestPlayersValue !== '') parts.push(`Best Max ${(state.maxBestPlayersOp === 'lte') ? '≤' : '≥'} ${state.maxBestPlayersValue}`);
+    if (state.minTimeValue !== '') parts.push(`Min Time ${(state.minTimeOp === 'lte') ? '≤' : '≥'} ${state.minTimeValue}`);
+    if (state.maxTimeValue !== '') parts.push(`Max Time ${(state.maxTimeOp === 'lte') ? '≤' : '≥'} ${state.maxTimeValue}`);
+    const extra = parts.length ? ` • ${parts.join(' • ')}` : '';
     el.textContent = `${state.filtered.length} of ${state.games.length} games${extra}`;
   }
 
@@ -146,6 +222,7 @@
       applyFilterAndSort();
     });
 
+    // Weight
     const op = document.getElementById('weight-op');
     const val = document.getElementById('weight-value');
     const onWeightChange = () => { state.weightValue = val.value; applyFilterAndSort(); };
@@ -153,9 +230,74 @@
     op.addEventListener('change', onWeightOpChange);
     val.addEventListener('input', onWeightChange);
     val.addEventListener('change', onWeightChange);
-    // Initialize from current control values
     state.weightOp = op.value;
     state.weightValue = val.value;
+
+    // Min Players
+    const minPlayersOp = document.getElementById('min-players-op');
+    const minPlayersVal = document.getElementById('min-players-value');
+    const onMinPlayersChange = () => { state.minPlayersValue = minPlayersVal.value; applyFilterAndSort(); };
+    const onMinPlayersOpChange = () => { state.minPlayersOp = minPlayersOp.value; applyFilterAndSort(); };
+    minPlayersOp.addEventListener('change', onMinPlayersOpChange);
+    minPlayersVal.addEventListener('input', onMinPlayersChange);
+    minPlayersVal.addEventListener('change', onMinPlayersChange);
+    state.minPlayersOp = minPlayersOp.value;
+    state.minPlayersValue = minPlayersVal.value;
+
+    // Max Players
+    const maxPlayersOp = document.getElementById('max-players-op');
+    const maxPlayersVal = document.getElementById('max-players-value');
+    const onMaxPlayersChange = () => { state.maxPlayersValue = maxPlayersVal.value; applyFilterAndSort(); };
+    const onMaxPlayersOpChange = () => { state.maxPlayersOp = maxPlayersOp.value; applyFilterAndSort(); };
+    maxPlayersOp.addEventListener('change', onMaxPlayersOpChange);
+    maxPlayersVal.addEventListener('input', onMaxPlayersChange);
+    maxPlayersVal.addEventListener('change', onMaxPlayersChange);
+    state.maxPlayersOp = maxPlayersOp.value;
+    state.maxPlayersValue = maxPlayersVal.value;
+
+    // Best Min Players
+    const minBestPlayersOp = document.getElementById('min-best-players-op');
+    const minBestPlayersVal = document.getElementById('min-best-players-value');
+    const onMinBestPlayersChange = () => { state.minBestPlayersValue = minBestPlayersVal.value; applyFilterAndSort(); };
+    const onMinBestPlayersOpChange = () => { state.minBestPlayersOp = minBestPlayersOp.value; applyFilterAndSort(); };
+    minBestPlayersOp.addEventListener('change', onMinBestPlayersOpChange);
+    minBestPlayersVal.addEventListener('input', onMinBestPlayersChange);
+    minBestPlayersVal.addEventListener('change', onMinBestPlayersChange);
+    state.minBestPlayersOp = minBestPlayersOp.value;
+    state.minBestPlayersValue = minBestPlayersVal.value;
+
+    // Best Max Players
+    const maxBestPlayersOp = document.getElementById('max-best-players-op');
+    const maxBestPlayersVal = document.getElementById('max-best-players-value');
+    const onMaxBestPlayersChange = () => { state.maxBestPlayersValue = maxBestPlayersVal.value; applyFilterAndSort(); };
+    const onMaxBestPlayersOpChange = () => { state.maxBestPlayersOp = maxBestPlayersOp.value; applyFilterAndSort(); };
+    maxBestPlayersOp.addEventListener('change', onMaxBestPlayersOpChange);
+    maxBestPlayersVal.addEventListener('input', onMaxBestPlayersChange);
+    maxBestPlayersVal.addEventListener('change', onMaxBestPlayersChange);
+    state.maxBestPlayersOp = maxBestPlayersOp.value;
+    state.maxBestPlayersValue = maxBestPlayersVal.value;
+
+    // Min Time
+    const minTimeOp = document.getElementById('min-time-op');
+    const minTimeVal = document.getElementById('min-time-value');
+    const onMinTimeChange = () => { state.minTimeValue = minTimeVal.value; applyFilterAndSort(); };
+    const onMinTimeOpChange = () => { state.minTimeOp = minTimeOp.value; applyFilterAndSort(); };
+    minTimeOp.addEventListener('change', onMinTimeOpChange);
+    minTimeVal.addEventListener('input', onMinTimeChange);
+    minTimeVal.addEventListener('change', onMinTimeChange);
+    state.minTimeOp = minTimeOp.value;
+    state.minTimeValue = minTimeVal.value;
+
+    // Max Time
+    const maxTimeOp = document.getElementById('max-time-op');
+    const maxTimeVal = document.getElementById('max-time-value');
+    const onMaxTimeChange = () => { state.maxTimeValue = maxTimeVal.value; applyFilterAndSort(); };
+    const onMaxTimeOpChange = () => { state.maxTimeOp = maxTimeOp.value; applyFilterAndSort(); };
+    maxTimeOp.addEventListener('change', onMaxTimeOpChange);
+    maxTimeVal.addEventListener('input', onMaxTimeChange);
+    maxTimeVal.addEventListener('change', onMaxTimeChange);
+    state.maxTimeOp = maxTimeOp.value;
+    state.maxTimeValue = maxTimeVal.value;
 
     document.querySelectorAll('thead th.sortable').forEach(th => {
       th.addEventListener('click', () => {
