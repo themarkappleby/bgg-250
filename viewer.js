@@ -222,6 +222,25 @@
       applyFilterAndSort();
     });
 
+    // Filters toggle
+    const filtersToggle = document.getElementById('filters-toggle');
+    const filtersSection = document.getElementById('filters-section');
+    const toggleIcon = filtersToggle.querySelector('.toggle-icon');
+    const toggleText = filtersToggle.querySelector('.toggle-text');
+    
+    filtersToggle.addEventListener('click', () => {
+      const isHidden = filtersSection.classList.contains('hidden');
+      if (isHidden) {
+        filtersSection.classList.remove('hidden');
+        toggleIcon.classList.add('expanded');
+        toggleText.textContent = 'Hide Filters';
+      } else {
+        filtersSection.classList.add('hidden');
+        toggleIcon.classList.remove('expanded');
+        toggleText.textContent = 'Show Filters';
+      }
+    });
+
     // Weight
     const op = document.getElementById('weight-op');
     const val = document.getElementById('weight-value');

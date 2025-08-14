@@ -6,8 +6,78 @@ header { position: sticky; top: 0; z-index: 1; background: linear-gradient(180de
 h1 { margin: 0 0 8px; font-size: 18px; font-weight: 600; letter-spacing: .3px; }
 .controls { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
 .control { display: flex; align-items: center; gap: 8px; background: #0b1224; border: 1px solid #243145; padding: 8px 10px; border-radius: 8px; }
-.control input { background: transparent; border: none; outline: none; color: var(--text); min-width: 220px; }
+.control input { background: transparent; border: none; outline: none; color: var(--text); min-width: 120px; }
 .control small { color: var(--muted); }
+
+/* Filters toggle button */
+.filters-toggle {
+  background: #0b1224;
+  border: 1px solid #243145;
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.filters-toggle:hover {
+  background: #1e293b;
+  border-color: #374151;
+}
+
+.filters-toggle:active {
+  background: #0f172a;
+}
+
+.toggle-icon {
+  font-size: 10px;
+  transition: transform 0.2s ease;
+}
+
+.toggle-icon.expanded {
+  transform: rotate(180deg);
+}
+
+/* Filters section */
+.filters-section {
+  width: 100%;
+  margin-top: 12px;
+  padding: 16px;
+  background: rgba(11, 18, 36, 0.8);
+  border: 1px solid #243145;
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+}
+
+.filters-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filter-row {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+}
+
+.filter-row .control {
+  flex: 1;
+  min-width: 0;
+  max-width: 50%;
+}
+
+.filter-row .control input {
+  min-width: 80px;
+  max-width: 100px;
+}
+
 .summary { color: var(--muted); margin-left: auto; }
 main .wrap { padding-top: 10px; }
 table { width: 100%; border-collapse: collapse; border-spacing: 0; background: var(--panel); border: 1px solid #1f2937; }
