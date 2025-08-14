@@ -9,7 +9,7 @@ const cheerio = require("cheerio");
 const START_URL = "https://boardgamegeek.com/browse/boardgame";
 
 function parseArgs(argv) {
-  const args = { allPages: false, out: "boardgames.json", delayMs: 500 };
+  const args = { allPages: false, out: "boardgames.json", delayMs: 500, limit: 250 };
   for (let i = 2; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === "--all-pages" || arg === "-a") {
@@ -19,6 +19,9 @@ function parseArgs(argv) {
       i += 1;
     } else if ((arg === "--delay" || arg === "-d") && i + 1 < argv.length) {
       args.delayMs = Number(argv[i + 1]);
+      i += 1;
+    } else if ((arg === "--limit" || arg === "-l") && i + 1 < argv.length) {
+      args.limit = Math.max(1, Number(argv[i + 1]));
       i += 1;
     }
   }
@@ -298,10 +301,11 @@ async function fetchGameDetails(gameUrl, attempts = 3) {
   throw lastError || new Error("Failed to fetch game details");
 }
 
-async function scrapeAll({ allPages, delayMs }) {
+async function scrapeAll({ allPages, delayMs, limit }) {
   let url = START_URL;
   const results = [];
   let page = 1;
+  const targetCount = allPages ? Number.POSITIVE_INFINITY : Math.max(1, Number(limit) || 250);
 
   while (url) {
     try {
@@ -314,7 +318,7 @@ async function scrapeAll({ allPages, delayMs }) {
       });
       process.stdout.write(`Scraped page ${page} → +${pageGames.length} (total ${results.length})\n`);
 
-      if (!allPages) break;
+      if (!allPages && results.length >= targetCount) break;
 
       const nextUrl = getNextPageUrl(html);
       if (!nextUrl) break;
@@ -326,20 +330,23 @@ async function scrapeAll({ allPages, delayMs }) {
       break;
     }
   }
-  // Enrich each game with details from its page
-  for (let i = 0; i < results.length; i += 1) {
-    const game = results[i];
+  // Select only the desired number of games
+  const selected = allPages ? results : results.slice(0, targetCount);
+
+  // Enrich each selected game with details from its page
+  for (let i = 0; i < selected.length; i += 1) {
+    const game = selected[i];
     try {
       const details = await fetchGameDetails(game.url);
       Object.assign(game, details);
-      process.stdout.write(`Enriched #${game.rank} ${game.title} with details (${i + 1}/${results.length})\n`);
+      process.stdout.write(`Enriched #${game.rank} ${game.title} with details (${i + 1}/${selected.length})\n`);
       if (delayMs > 0) await sleep(delayMs);
     } catch (e) {
       process.stderr.write(`Error fetching details for ${game.title}: ${e.message}\n`);
     }
   }
 
-  return results;
+  return selected;
 }
 
 function writeJsonFile(filePath, data) {
@@ -352,7 +359,7 @@ function writeJsonFile(filePath, data) {
 
 (async function main() {
   const args = parseArgs(process.argv);
-  const names = await scrapeAll({ allPages: args.allPages, delayMs: args.delayMs });
+  const names = await scrapeAll({ allPages: args.allPages, delayMs: args.delayMs, limit: args.limit });
   const outPath = writeJsonFile(args.out, names);
   process.stdout.write(`Wrote ${names.length} games → ${outPath}\n`);
   process.stdout.write(`Open index.html in a local server to view the table (e.g. npx http-server).\n`);
