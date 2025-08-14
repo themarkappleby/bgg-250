@@ -1,0 +1,25 @@
+{
+  "name": "bgg-scraper",
+  "version": "1.0.0",
+  "description": "Scrape board game names from BoardGameGeek browse pages and export to JSON",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "scrape": "node index.js --all-pages --out boardgames.json"
+    ,
+    "serve": "npx http-server ."
+  },
+  "keywords": [
+    "scrape",
+    "boardgamegeek",
+    "bgg",
+    "cheerio",
+    "axios"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "cheerio": "^1.0.0-rc.12"
+  }
+}
