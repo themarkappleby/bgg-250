@@ -6,8 +6,10 @@
     sortKey: 'rank',
     sortDir: 'asc', // 'asc' | 'desc'
     query: '',
-    weightOp: 'all', // 'all' | 'lte' | 'gte'
-    weightValue: '',
+    minWeightOp: 'all', // 'all' | 'lte' | 'gte'
+    minWeightValue: '',
+    maxWeightOp: 'all', // 'all' | 'lte' | 'gte'
+    maxWeightValue: '',
     minPlayersOp: 'all',
     minPlayersValue: '',
     maxPlayersOp: 'all',
@@ -54,11 +56,20 @@
       ));
     }
     // Weight filter
-    if (state.weightValue !== '') {
-      const normalized = String(state.weightValue).replace(',', '.');
+    if (state.minWeightValue !== '') {
+      const normalized = String(state.minWeightValue).replace(',', '.');
       const threshold = Number(normalized);
       if (!Number.isNaN(threshold)) {
-        const op = state.weightOp === 'all' ? 'gte' : state.weightOp; // default to >= when a value is present
+        const op = state.minWeightOp === 'all' ? 'gte' : state.minWeightOp; // default to >= when a value is present
+        if (op === 'lte') rows = rows.filter(g => { const gw = Number(g.weight); return !Number.isNaN(gw) && gw <= threshold; });
+        if (op === 'gte') rows = rows.filter(g => { const gw = Number(g.weight); return !Number.isNaN(gw) && gw >= threshold; });
+      }
+    }
+    if (state.maxWeightValue !== '') {
+      const normalized = String(state.maxWeightValue).replace(',', '.');
+      const threshold = Number(normalized);
+      if (!Number.isNaN(threshold)) {
+        const op = state.maxWeightOp === 'all' ? 'lte' : state.maxWeightOp; // default to <= when a value is present
         if (op === 'lte') rows = rows.filter(g => { const gw = Number(g.weight); return !Number.isNaN(gw) && gw <= threshold; });
         if (op === 'gte') rows = rows.filter(g => { const gw = Number(g.weight); return !Number.isNaN(gw) && gw >= threshold; });
       }
@@ -134,7 +145,8 @@
     const el = document.getElementById('summary');
     if (!el) return;
     const parts = [];
-    if (state.weightValue !== '') parts.push(`Weight ${(state.weightOp === 'lte') ? '≤' : '≥'} ${String(state.weightValue).replace(',', '.')}`);
+    if (state.minWeightValue !== '') parts.push(`Min Weight ${(state.minWeightOp === 'lte') ? '≤' : '≥'} ${String(state.minWeightValue).replace(',', '.')}`);
+    if (state.maxWeightValue !== '') parts.push(`Max Weight ${(state.maxWeightOp === 'lte') ? '≤' : '≥'} ${String(state.maxWeightValue).replace(',', '.')}`);
     if (state.minPlayersValue !== '') parts.push(`Min P ${(state.minPlayersOp === 'lte') ? '≤' : '≥'} ${state.minPlayersValue}`);
     if (state.maxPlayersValue !== '') parts.push(`Max P ${(state.maxPlayersOp === 'lte') ? '≤' : '≥'} ${state.maxPlayersValue}`);
     if (state.minBestPlayersValue !== '') parts.push(`Best Min ${(state.minBestPlayersOp === 'lte') ? '≤' : '≥'} ${state.minBestPlayersValue}`);
@@ -242,15 +254,26 @@
     });
 
     // Weight
-    const op = document.getElementById('weight-op');
-    const val = document.getElementById('weight-value');
-    const onWeightChange = () => { state.weightValue = val.value; applyFilterAndSort(); };
-    const onWeightOpChange = () => { state.weightOp = op.value; applyFilterAndSort(); };
-    op.addEventListener('change', onWeightOpChange);
-    val.addEventListener('input', onWeightChange);
-    val.addEventListener('change', onWeightChange);
-    state.weightOp = op.value;
-    state.weightValue = val.value;
+    const minWeightOp = document.getElementById('min-weight-op');
+    const minWeightVal = document.getElementById('min-weight-value');
+    const maxWeightOp = document.getElementById('max-weight-op');
+    const maxWeightVal = document.getElementById('max-weight-value');
+
+    const onMinWeightChange = () => { state.minWeightValue = minWeightVal.value; applyFilterAndSort(); };
+    const onMinWeightOpChange = () => { state.minWeightOp = minWeightOp.value; applyFilterAndSort(); };
+    const onMaxWeightChange = () => { state.maxWeightValue = maxWeightVal.value; applyFilterAndSort(); };
+    const onMaxWeightOpChange = () => { state.maxWeightOp = maxWeightOp.value; applyFilterAndSort(); };
+
+    minWeightOp.addEventListener('change', onMinWeightOpChange);
+    minWeightVal.addEventListener('input', onMinWeightChange);
+    minWeightVal.addEventListener('change', onMinWeightChange);
+    maxWeightOp.addEventListener('change', onMaxWeightOpChange);
+    maxWeightVal.addEventListener('input', onMaxWeightChange);
+    maxWeightVal.addEventListener('change', onMaxWeightChange);
+    state.minWeightOp = minWeightOp.value;
+    state.minWeightValue = minWeightVal.value;
+    state.maxWeightOp = maxWeightOp.value;
+    state.maxWeightValue = maxWeightVal.value;
 
     // Min Players
     const minPlayersOp = document.getElementById('min-players-op');

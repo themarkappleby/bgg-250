@@ -26,15 +26,26 @@
           
           <div id="filters-section" class="filters-section hidden">
             <div class="filters-grid">
-              <label class="control">
-                <small>Weight</small>
-                <select id="weight-op">
-                  <option value="all">All</option>
-                  <option value="lte">≤</option>
-                  <option value="gte">≥</option>
-                </select>
-                <input id="weight-value" type="number" min="0" max="5" step="0.1" placeholder="2.5" />
-              </label>
+              <div class="filter-row">
+                <label class="control">
+                  <small>Min Weight</small>
+                  <select id="min-weight-op">
+                    <option value="all">All</option>
+                    <option value="lte">≤</option>
+                    <option value="gte">≥</option>
+                  </select>
+                  <input id="min-weight-value" type="number" min="0" max="5" step="0.1" placeholder="1.0" />
+                </label>
+                <label class="control">
+                  <small>Max Weight</small>
+                  <select id="max-weight-op">
+                    <option value="all">All</option>
+                    <option value="lte">≤</option>
+                    <option value="gte">≥</option>
+                  </select>
+                  <input id="max-weight-value" type="number" min="0" max="5" step="0.1" placeholder="3.0" />
+                </label>
+              </div>
               
               <div class="filter-row">
                 <label class="control">
